@@ -82,7 +82,7 @@
                             </div>
                             <div class="dropdown-inner">
                                 <ul class="link-list">
-                                    <li><a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"><em class="icon ni ni-signout"></em><span>Sign out</span></a></li>
+                                    <li><a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"><em class="icon ni ni-signout"></em><span>Log out</span></a></li>
                                 </ul>
                                 <form id="logout-form" action="{{ route('admin-dashboard.logout') }}" method="POST" style="display: none;">
                                     @csrf

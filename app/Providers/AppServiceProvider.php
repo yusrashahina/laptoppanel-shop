@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -12,6 +13,7 @@ class AppServiceProvider extends ServiceProvider
 
     protected $services = [
         'user.service' => \App\Services\UserService::class,
+        'user.preference.service' => \App\Services\UserPreferenceService::class,
     ];
 
     public function register(): void
@@ -28,6 +30,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Gate::before(function ($user, $ability) {
+            return $user->hasRole('Super Admin') ? true : null;
+        });
     }
 }

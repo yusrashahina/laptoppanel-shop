@@ -3,10 +3,10 @@ namespace App\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
-class UserServiceFacade extends Facade
+class UserPreference extends Facade
 {
     protected static function getFacadeAccessor()
     {
-        return 'user.service';
+        return 'user.preference.service';
     }
 }

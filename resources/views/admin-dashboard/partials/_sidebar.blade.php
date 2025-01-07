@@ -14,16 +14,10 @@
                 </a>
                 <ul class="nk-menu-sub">
                     <li class="nk-menu-item">
-                        <a href="{#" class="nk-menu-link"><span class="nk-menu-text">All System Users</span></a>
+                        <a href="{{route('admin-dashboard.users.index')}}" class="nk-menu-link"><span class="nk-menu-text">All Users</span></a>
                     </li>
                     <li class="nk-menu-item">
-                        <a href="#" class="nk-menu-link"><span class="nk-menu-text">Create System User</span></a>
-                    </li>
-                    <li class="nk-menu-item">
-                        <a href="#" class="nk-menu-link"><span class="nk-menu-text">All Users</span></a>
-                    </li>
-                    <li class="nk-menu-item">
-                        <a href="#" class="nk-menu-link"><span class="nk-menu-text">Create User</span></a>
+                        <a href="{{route('admin-dashboard.users.create')}}" class="nk-menu-link"><span class="nk-menu-text">Create User</span></a>
                     </li>
                 </ul><!-- .nk-menu-sub -->
             </li><!-- .nk-menu-item -->

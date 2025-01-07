@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html lang="zxx" class="js">
 @include('admin-dashboard.partials._head')
-<body class="nk-body npc-default has-apps-sidebar has-sidebar ">
+<body class="nk-body npc-default has-sidebar ">
     <div class="nk-app-root">
-        @include('admin-dashboard.partials._mini-sidebar')
         <div class="nk-main ">
             <div class="nk-wrap ">
                 @include('admin-dashboard.partials._header')

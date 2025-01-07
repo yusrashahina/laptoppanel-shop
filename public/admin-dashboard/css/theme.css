@@ -1,6 +1,26 @@
-.dashboard-widget .amount{
-    color: #364a63;
-    font-size: 2rem;
+.nk-sidebar{
+    width: 265px;
+}
+.nk-menu-link{
+    letter-spacing: normal;
     font-weight: 500;
-    line-height: 1.2;
+}
+
+.nk-menu-main > li > .nk-menu-link{
+    letter-spacing: normal;
+}
+
+.page-link:not([href]):not(.pagination .page-link) {
+    background-color: transparent;
+    color: inherit;
+}
+
+.sort-link{
+    color: #8094ae;
+}
+
+.nk-tb-no-data .nk-tb-col {
+    grid-column: 1 / -1;
+    justify-content: center;
+    text-align: center;
 }
