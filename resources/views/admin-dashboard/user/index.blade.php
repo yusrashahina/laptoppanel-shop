@@ -14,7 +14,7 @@
                             <li><a href="#" class="btn btn-white btn-outline-light"><em class="icon ni ni-download-cloud"></em><span>Export</span></a></li>
                             <li><a href="#" class="btn btn-white btn-outline-light"><em class="icon ni ni-upload-cloud"></em><span>Import</span></a></li>
                             <li class="nk-block-tools-opt">
-                                <a href="#" class="btn btn-primary"><em class="icon ni ni-user-add-fill"></em><span>Add User</span></a>
+                                <a href="{{route('admin-dashboard.users.create')}}" class="btn btn-primary"><em class="icon ni ni-user-add-fill"></em><span>Create New User</span></a>
                             </li>
                         </ul>
                     </div>
@@ -24,20 +24,35 @@
     </div><!-- .nk-block-head -->
     <div class="nk-block">
         <ul class="breadcrumb breadcrumb-pipe">
-            <li class="breadcrumb-item active">
-                <a href="{{route('admin-dashboard.users.index')}}">All ({{$users->count()}})</a>
+            <!-- All Users -->
+            <li class="breadcrumb-item {{ request()->input('filter.status') === null && !request()->input('filter.trashed') ? 'active' : '' }}">
+                <a href="{{ route('admin-dashboard.users.index') }}">All ({{ $totalUsers }})</a>
             </li>
-            <li class="breadcrumb-item">
-                <a href="#">Active (count)</a>
+
+            <!-- Active Users -->
+            <li class="breadcrumb-item {{ request('filter.status') == '1' ? 'active' : '' }}">
+                <a href="{{ route('admin-dashboard.users.index', ['filter[status]' => '1']) }}">
+                    Active ({{ $activeUsers }})
+                </a>
             </li>
-            <li class="breadcrumb-item">
-                <a href="#">Suspended (count)</a>
+
+            <!-- Suspended Users -->
+            <li class="breadcrumb-item {{ request('filter.status') == '0' ? 'active' : '' }}">
+                <a href="{{ route('admin-dashboard.users.index', ['filter[status]' => '0']) }}">
+                    Suspended ({{ $suspendedUsers }})
+                </a>
             </li>
-            <li class="breadcrumb-item ">
-                <a href="#">Trash (count)</a>
+
+            <!-- Trashed Users -->
+            <li class="breadcrumb-item {{ request('filter.trashed') ? 'active' : '' }}">
+                <a href="{{ route('admin-dashboard.users.index', ['filter[trashed]' => '1']) }}">
+                    Trash ({{ $trashedUsers }})
+                </a>
             </li>
         </ul>
     </div>
+    @include('admin-dashboard.partials._alert-error')
+    @include('admin-dashboard.partials._alert-success')
     <div class="nk-block">
         <div class="card card-bordered card-stretch">
             <div class="card-inner-group">
@@ -46,24 +61,20 @@
                         <div class="card-tools">
                             <div class="form-inline flex-nowrap gx-3">
                                 <div class="form-wrap w-150px">
-                                    <select class="form-select js-select2" data-search="off" data-placeholder="Bulk Action">
-                                        <option value="">Bulk Action</option>
-                                        <option value="suspend">Suspend</option>
-                                        <option value="delete">Delete</option>
-                                    </select>
+                                    @include('admin-dashboard.partials._user-bulk-action')
                                 </div>
                                 <div class="btn-wrap">
-                                    <span class="d-none d-md-block"><button class="btn btn-dim btn-outline-light disabled">Apply</button></span>
-                                    <span class="d-md-none"><button class="btn btn-dim btn-outline-light btn-icon disabled"><em class="icon ni ni-arrow-right"></em></button></span>
+                                    <span class="d-none d-md-block"><button class="btn btn-dim btn-outline-light applyBulkAction disabled">Apply</button></span>
+                                    <span class="d-md-none"><button class="btn btn-dim btn-outline-light btn-icon applyBulkAction disabled"><em class="icon ni ni-arrow-right"></em></button></span>
                                 </div>
                             </div><!-- .form-inline -->
                         </div><!-- .card-tools -->
                         <div class="card-tools me-n1">
                             <ul class="btn-toolbar gx-1">
                                 @if(request('search'))
-                                    <li>
+                                    <li class="d-flex align-items-center">
                                         <span class="badge rounded-pill bg-light text-dark">{{ request('search') }}
-                                            <a href="{{ route('admin-dashboard.users.index') }}" class="text-dark ms-2"><em class="icon ni ni-cross"></em></a>
+                                            <a href="{{ route('admin-dashboard.users.index') }}" class="d-flex align-items-center justify-content-center text-dark ms-2"><em class="icon ni ni-cross"></em></a>
                                         </span>
                                     </li>
                                 @endif
@@ -198,92 +209,95 @@
                     </div>
                 </div><!-- .card-inner -->
                 <div class="card-inner p-0">
-                    <div class="nk-tb-list nk-tb-ulist">
-                        <div class="nk-tb-item nk-tb-head">
-                            <div class="nk-tb-col nk-tb-col-check">
-                                <div class="custom-control custom-control-sm custom-checkbox notext">
-                                    <input type="checkbox" class="custom-control-input" id="cid">
-                                    <label class="custom-control-label" for="cid"></label>
-                                </div>
-                            </div>
-                            <div class="nk-tb-col">
-                                @include('admin-dashboard.partials._sortable-column', ['column' => 'name', 'label' => 'Name'])
-                            </div>
-                            <div class="nk-tb-col tb-col-sm">
-                                @include('admin-dashboard.partials._sortable-column', ['column' => 'email', 'label' => 'Email'])
-                            </div>
-                            <div class="nk-tb-col tb-col-md"><span class="sub-text">Role</span></div>
-                            <div class="nk-tb-col tb-col-xxl">
-                                @include('admin-dashboard.partials._sortable-column', ['column' => 'created_at', 'label' => 'Joined'])
-                            </div>
-                            <div class="nk-tb-col tb-col-lg"><span class="sub-text">Last Login</span></div>
-                            <div class="nk-tb-col tb-col-lg">@include('admin-dashboard.partials._sortable-column', ['column' => 'status', 'label' => 'Status'])</div>
-                            <div class="nk-tb-col text-end"><span class="sub-text">Actions</span></div>
-                        </div><!-- .nk-tb-item -->
-                        @foreach($users as $user)
-                            <div class="nk-tb-item">
+                    @if($users->isNotEmpty())
+                        <div class="nk-tb-list nk-tb-ulist">
+                            <div class="nk-tb-item nk-tb-head">
                                 <div class="nk-tb-col nk-tb-col-check">
                                     <div class="custom-control custom-control-sm custom-checkbox notext">
-                                        <input type="checkbox" class="custom-control-input" id="cid1">
-                                        <label class="custom-control-label" for="cid1"></label>
+                                        <input type="checkbox" class="custom-control-input" id="checkAll">
+                                        <label class="custom-control-label" for="checkAll"></label>
                                     </div>
                                 </div>
                                 <div class="nk-tb-col">
-                                    <a href="#">
-                                        <div class="user-card">
-                                            <div class="user-avatar sm">
-                                                <img src="{{asset('admin-dashboard/images/avatar/a-sm.jpg')}}" alt="user avatar">
-                                            </div>
-                                            <div class="user-name">
-                                                <span class="tb-lead">{{$user->name}} <span class="dot dot-success d-lg-none ms-1"></span></span>
-                                            </div>
-                                        </div>
-                                    </a>
+                                    @include('admin-dashboard.partials._sortable-column', ['column' => 'name', 'label' => 'Name'])
                                 </div>
                                 <div class="nk-tb-col tb-col-sm">
-                                    <span class="sub-text">{{$user->email}}</span>
+                                    @include('admin-dashboard.partials._sortable-column', ['column' => 'email', 'label' => 'Email'])
                                 </div>
-                                <div class="nk-tb-col tb-col-md">
-                                    <span class="sub-text">Super Admin</span>
-                                </div>
-                                <div class="nk-tb-col tb-col-lg">
-                                    <span class="sub-text">{{$user->created_at->diffForHumans()}}</span>
-                                </div>
+                                <div class="nk-tb-col tb-col-md"><span class="sub-text">Role</span></div>
                                 <div class="nk-tb-col tb-col-xxl">
-                                    <span class="sub-text">{{ $user->last_login ? $user->last_login->diffForHumans() : 'N/A' }}</span>
+                                    @include('admin-dashboard.partials._sortable-column', ['column' => 'created_at', 'label' => 'Joined'])
                                 </div>
-                                <div class="nk-tb-col tb-col-lg">
-                                    {!! ($user->status) ? '<span class="badge badge-dim bg-success">Active</span>' : '<span class="badge badge-dim bg-danger">Suspended</span>' !!}
-                                </div>
-                                <div class="nk-tb-col nk-tb-col-tools">
-                                    <ul class="nk-tb-actions gx-1">
-                                        <li class="nk-tb-action-hidden">
-                                            <a href="#" class="btn btn-trigger btn-icon" data-bs-toggle="tooltip" data-bs-placement="top" title="Suspend">
-                                                <em class="icon ni ni-user-cross-fill"></em>
-                                            </a>
-                                        </li>
-                                        <li class="nk-tb-action-hidden">
-                                            <a href="#" class="btn btn-trigger btn-icon" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete">
-                                                <em class="icon ni ni-trash-fill"></em>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <div class="drodown">
-                                                <a href="#" class="dropdown-toggle btn btn-icon btn-trigger" data-bs-toggle="dropdown"><em class="icon ni ni-more-h"></em></a>
-                                                <div class="dropdown-menu dropdown-menu-end">
-                                                    <ul class="link-list-opt no-bdr">
-                                                        <li><a href="#"><em class="icon ni ni-cart"></em><span>Delete</span></a></li>
-                                                        <li><a href="#"><em class="icon ni ni-na"></em><span>Suspend</span></a></li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </div>
+                                <div class="nk-tb-col tb-col-lg"><span class="sub-text">Last Login</span></div>
+                                <div class="nk-tb-col tb-col-lg">@include('admin-dashboard.partials._sortable-column', ['column' => 'status', 'label' => 'Status'])</div>
+                                <div class="nk-tb-col text-end"><span class="sub-text">Actions</span></div>
                             </div><!-- .nk-tb-item -->
-                        @endforeach
-                    </div><!-- .nk-tb-list -->
-                    No data available
+                                @foreach($users as $user)
+                                    <div class="nk-tb-item">
+                                        <div class="nk-tb-col nk-tb-col-check">
+                                            <div class="custom-control custom-control-sm custom-checkbox notext">
+                                                <input type="checkbox" class="custom-control-input selectRow" id="check{{$user->id}}" data-id="{{ $user->id }}" {{ $user->id === auth()->id() ? 'disabled' : '' }}>
+                                                <label class="custom-control-label" for="check{{$user->id}}"></label>
+                                            </div>
+                                        </div>
+                                        <div class="nk-tb-col">
+                                            <a href="#">
+                                                <div class="user-card">
+                                                    <div class="user-avatar sm">
+                                                        <img src="{{asset('admin-dashboard/images/avatar/a-sm.jpg')}}" alt="user avatar">
+                                                    </div>
+                                                    <div class="user-name">
+                                                        <span class="tb-lead">{{$user->name}} <span class="dot dot-success d-lg-none ms-1"></span></span>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </div>
+                                        <div class="nk-tb-col tb-col-sm">
+                                            <span class="sub-text">{{$user->email}}</span>
+                                        </div>
+                                        <div class="nk-tb-col tb-col-md">
+                                            <span class="sub-text">Super Admin</span>
+                                        </div>
+                                        <div class="nk-tb-col tb-col-lg">
+                                            <span class="sub-text">{{$user->created_at->diffForHumans()}}</span>
+                                        </div>
+                                        <div class="nk-tb-col tb-col-xxl">
+                                            <span class="sub-text">{{ $user->last_login ? $user->last_login->diffForHumans() : 'N/A' }}</span>
+                                        </div>
+                                        <div class="nk-tb-col tb-col-lg">
+                                            {!! ($user->status) ? '<span class="badge badge-dim bg-success">Active</span>' : '<span class="badge badge-dim bg-danger">Suspended</span>' !!}
+                                        </div>
+                                        <div class="nk-tb-col nk-tb-col-tools">
+                                            <ul class="nk-tb-actions gx-1">
+                                                <li class="nk-tb-action-hidden">
+                                                    <a href="#" class="btn btn-trigger btn-icon" data-bs-toggle="tooltip" data-bs-placement="top" title="Suspend">
+                                                        <em class="icon ni ni-user-cross-fill"></em>
+                                                    </a>
+                                                </li>
+                                                <li class="nk-tb-action-hidden">
+                                                    <a href="#" class="btn btn-trigger btn-icon" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete">
+                                                        <em class="icon ni ni-trash-fill"></em>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <div class="drodown">
+                                                        <a href="#" class="dropdown-toggle btn btn-icon btn-trigger" data-bs-toggle="dropdown"><em class="icon ni ni-more-h"></em></a>
+                                                        <div class="dropdown-menu dropdown-menu-end">
+                                                            <ul class="link-list-opt no-bdr">
+                                                                <li><a href="#"><em class="icon ni ni-cart"></em><span>Delete</span></a></li>
+                                                                <li><a href="#"><em class="icon ni ni-na"></em><span>Suspend</span></a></li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div><!-- .nk-tb-item -->
+                                @endforeach
+                        </div><!-- .nk-tb-list -->
+                    @else
+                        <p class="text-muted text-center p-1">No data available</p>
+                    @endif
                 </div><!-- .card-inner -->
                 <div class="card-inner">
                     <div class="nk-block-between-md g-3">
@@ -325,6 +339,102 @@
                 let searchValue = $('#userSearchInput').val().trim();
                 if (searchValue.length > 0) {
                     window.location.href = "{{ route('admin-dashboard.users.index') }}" + '?search=' + searchValue;
+                }
+            });
+        });
+        $(document).ready(function () {
+            const rowCheckboxes = $('.selectRow');
+            const checkAll = $('#checkAll');
+            const loggedInUserId = "{{ auth()->id() }}"; // Fetch current user ID
+
+            // Check All Checkbox Handling
+            checkAll.on('change', function () {
+                const isChecked = $(this).prop('checked');
+                rowCheckboxes.each(function () {
+                    const userId = $(this).data('id');
+                    // Prevent self-selection from Check All
+                    if (userId != loggedInUserId) {
+                        $(this).prop('checked', isChecked).trigger('change');
+                        $(this).closest('.nk-tb-item').toggleClass('selected', isChecked);
+                    }
+                });
+            });
+
+            // Individual Row Checkbox Handling
+            rowCheckboxes.on('change', function () {
+                const userId = $(this).data('id');
+                if (userId == loggedInUserId) {
+                    Swal.fire('Error', 'You cannot perform bulk actions on yourself.', 'error');
+                    $(this).prop('checked', false);
+                    return;
+                }
+                const allChecked = rowCheckboxes.length === rowCheckboxes.filter(':checked').length;
+                checkAll.prop('checked', allChecked);
+                $(this).closest('.nk-tb-item').toggleClass('selected', $(this).prop('checked'));
+                toggleBulkActionButton();
+            });
+
+            // Apply Button Management
+            function toggleBulkActionButton() {
+                const anyChecked = rowCheckboxes.filter(':checked').length > 0;
+                $('.applyBulkAction').toggleClass('disabled', !anyChecked);
+            }
+        });
+
+        // bullk acions
+
+        $('.applyBulkAction').on('click', function () {
+            const selectedIds = $('.selectRow:checked').map(function () {
+                return $(this).data('id');
+            }).get();
+
+            const selectedAction = $('#bulkActionSelect').val();
+
+            if (selectedIds.length === 0 || !selectedAction) {
+                Swal.fire('Error', 'Please select users and an action.', 'error');
+                return;
+            }
+
+            let url = '';
+            let confirmationText = '';
+
+            // Set route and confirmation message based on action
+            if (selectedAction === 'delete') {
+                url = "{{ route('admin-dashboard.users.bulkDeleteUsers') }}";
+                confirmationText = "Are you sure you want to delete these users? All related data will be deleted too!";
+            } else {
+                url = "{{ route('admin-dashboard.users.bulkUpdateUsers') }}";
+                confirmationText = "Are you sure you want to perform this action?";
+            }
+
+            // SweetAlert for confirmation
+            Swal.fire({
+                title: 'Confirm Bulk Action',
+                text: confirmationText,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, proceed',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // AJAX Request
+                    $.ajax({
+                        url: url,
+                        method: 'POST',
+                        data: {
+                            user_ids: selectedIds,
+                            action: selectedAction,
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function (response) {
+                            Swal.fire('Success', response.message, 'success').then(() => {
+                                location.reload(); // Refresh the page after success
+                            });
+                        },
+                        error: function (xhr) {
+                            Swal.fire('Error', xhr.responseJSON.message || 'An error occurred.', 'error');
+                        }
+                    });
                 }
             });
         });

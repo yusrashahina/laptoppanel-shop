@@ -6,14 +6,21 @@ use App\Models\UserPreference;
 class UserPreferenceService
 {
 
+    protected static array $cachedPreferences = [];
+
     public function getPreference(int $userId, string $module, string $key, $default = null): ?string
     {
-        $preference = UserPreference::where('user_id', $userId)
-            ->where('module', $module)
-            ->where('key', $key)
-            ->first();
+        $cacheKey = "{$userId}.{$module}.{$key}";
 
-        return $preference ? $preference->value : $default;
+        if (!isset(self::$cachedPreferences[$cacheKey])) {
+            self::$cachedPreferences[$cacheKey] = UserPreference::where([
+                'user_id' => $userId,
+                'module' => $module,
+                'key' => $key
+            ])->value('value') ?? $default;
+        }
+
+        return self::$cachedPreferences[$cacheKey];
     }
 
     public function savePreference(int $userId, string $module, string $key, string $value): void

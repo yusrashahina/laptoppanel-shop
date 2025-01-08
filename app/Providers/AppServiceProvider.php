@@ -14,6 +14,7 @@ class AppServiceProvider extends ServiceProvider
     protected $services = [
         'user.service' => \App\Services\UserService::class,
         'user.preference.service' => \App\Services\UserPreferenceService::class,
+        'role.service' => \App\Services\RoleService::class,
     ];
 
     public function register(): void

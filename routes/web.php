@@ -34,5 +34,7 @@ Route::name('admin-dashboard.')->group(function (){
 
         Route::resource('users',UserController::class);
         Route::post('/users/update-preference', [UserController::class, 'updateRecordsPerPage'])->name('users.update-preference');
+        Route::post('users/bulk-update', [UserController::class, 'bulkUpdateUsers'])->name('users.bulkUpdateUsers');
+        Route::post('users/bulk-delete', [UserController::class, 'bulkDeleteUsers'])->name('users.bulkDeleteUsers');
     });
 });
