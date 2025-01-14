@@ -270,13 +270,13 @@
                                         <div class="nk-tb-col nk-tb-col-tools">
                                             <ul class="nk-tb-actions gx-1">
                                                 <li class="nk-tb-action-hidden">
-                                                    <a href="#" class="btn btn-trigger btn-icon" data-bs-toggle="tooltip" data-bs-placement="top" title="Suspend">
-                                                        <em class="icon ni ni-user-cross-fill"></em>
+                                                    <a href="{{route('admin-dashboard.users.edit',$user->id)}}" class="btn btn-trigger btn-icon" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
+                                                        <em class="icon ni ni-edit-fill"></em>
                                                     </a>
                                                 </li>
                                                 <li class="nk-tb-action-hidden">
-                                                    <a href="#" class="btn btn-trigger btn-icon" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete">
-                                                        <em class="icon ni ni-trash-fill"></em>
+                                                    <a href="#" class="btn btn-trigger btn-icon" data-bs-toggle="tooltip" data-bs-placement="top" title="Suspend">
+                                                        <em class="icon ni ni-user-cross-fill"></em>
                                                     </a>
                                                 </li>
                                                 <li>

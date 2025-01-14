@@ -20,7 +20,7 @@ class UserService
             ->with(['roles' => function ($query) {
                 $query->select('id', 'name');
             }])
-            ->allowedSorts(['name', 'email', 'status']);
+            ->allowedSorts(['name', 'email', 'created_at', 'status']);
 
         $this->applySearch($query);
         $this->applyFilters($query);

@@ -8,7 +8,9 @@ use App\Facades\UserService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AdminDashboard\BulkUpdateUsersRequest;
 use App\Http\Requests\AdminDashboard\UpdateRecordsPerPageRequest;
+use App\Http\Requests\AdminDashboard\UpdateUserRequest;
 use App\Http\Requests\StoreUserRequest;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -33,10 +35,16 @@ class UserController extends Controller
         return redirect()->route('admin-dashboard.users.index')->with('success', 'User created successfully.');
     }
 
-    public function updateRecordsPerPage(UpdateRecordsPerPageRequest $request)
+    public function edit(User $user)
     {
-        UserPreference::savePreference(Auth::id(), 'users', 'records_per_page', $request->input('page_size'));
-        return redirect()->route('admin-dashboard.users.index');
+        $roles = RoleService::getRoleNamesWithIds();
+
+        return view('admin-dashboard.user.edit', compact('user', 'roles'));
+    }
+
+    public function update(UpdateUserRequest $request)
+    {
+
     }
 
     public function bulkUpdateUsers(BulkUpdateUsersRequest $request)
@@ -49,10 +57,20 @@ class UserController extends Controller
         return response()->json(['message' => 'Bulk action completed successfully.']);
     }
 
+    public function destroy(Request $request)
+    {
+
+    }
 
     public function bulkDeleteUsers(BulkUpdateUsersRequest $request)
     {
         UserService::bulkDeleteUsers($request->validated()['user_ids']);
         return response()->json(['message' => 'Users permanently deleted successfully.']);
+    }
+
+    public function updateRecordsPerPage(UpdateRecordsPerPageRequest $request)
+    {
+        UserPreference::savePreference(Auth::id(), 'users', 'records_per_page', $request->input('page_size'));
+        return redirect()->route('admin-dashboard.users.index');
     }
 }
